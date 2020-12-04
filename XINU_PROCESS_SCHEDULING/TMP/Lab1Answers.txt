@@ -1,0 +1,42 @@
+Q1. What are the advantages and disadvantages of each of the two scheduling policies? Also, give the advantages and disadvantages of the round robin scheduling policy originally implemented in Xinu.
+
+Ans. The various sechduling policies worked on in this assignment are Default scheduler, Exponential Distribution scheduler, Linux like scheduler and Round Robin scheduler.
+
+Each of these scheduling policies address the CPU starvation resulted while scheduling a process.
+
+The Exponential distribuion scheduler has the following advantages:
+1. Lower priority process will have exponentially high probability of being selected by scheduler, reducing the chance of starvation which is commonly seen in scheduling policies.
+2. Since the exp_dev uses random function, this makes sure that the process will not scheduled in same order every time, when we have a group of low priority processes.
+
+The expoenential distribution scheduler has following disadvantages:
+1. There is chance of starvation for higher priority process as the scheduler selecting high priority process in a group of lower priority process is exponentially less, where as it should have been uniform.
+2. The hyperparameter lambda and n needs to be tuned accordingly to obtain the best results form the scheduler. Hence the scheduler is not stable.
+
+The linux like scheduler has the following advantages:
+1. It addresses the CPU process starvation, where both low priority and high priority processes are allocated the time quantum(goodness factor). This value is updated every epoch, which makes sure that low priority processlower quantums in each epoch while High priority process is allocated higher quantum in that epoch.
+2. It doesn't involve the randomness factor. It gives more preference to process which was not allocated any CPU time in previous epoch.
+
+The linux like scheduler has the following disadvantages:
+1. In the example the Process A had the lowest priority and we saw that it was allocated the more quantums in the later stage when majority of high priority taks are completed.
+2. Certain times the low priority process is abondened while the main process may not be active until the low priority tasks is complete.
+3. In each reschedule there is system overhead of calculating additional criteria for proper functioning of scheduler.
+
+The following are the advantages of Round Robin Scheduler:
+1. It is simple and fast scheduling process.
+2. When there are multiple process with equal priority, it makes sure that all of these processes are allocated equal quantums.
+3. The higher priority process executes first, hence no process startvation for high priority process.
+
+The following are the disadvantages of Round Robin Scheduler:
+1. Scheduling policy causes the starvation of low priority process, by allocating time quantums to high priority process.
+
+Q2. Describe the way each of the schedulers affects the NULL process.
+
+Ans.The schedulers handle the NULL process as follows:
+Exponential Distribution Scheduler: 
+It checks the Rady queue during every reschedule call. If the ready queue is empty(q[rdyhead].qnext == rdytail), indicating no process has the priority more than 0. Only then the Null process is scheduled to run.
+
+Linux Like Scheduler:
+This scheduling policy does not execute the NULL process at all. Since during initialization time quantum is allocated based on the goodness factor. This in tern is set by counter which is priority of the process. So no quantum ticks are allocated for the NULL process.
+ 
+Xinu Scheduler:
+Only when the Ready queue is empty(q[rdyhead].qnext == rdytail), indicating there is no other process to run. Only then NULL process is scheduled to run.

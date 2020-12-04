@@ -1,0 +1,72 @@
+Q1. Assuming the XINU text begins at address 0x0, draw a rough diagram of XINU's memory layout with addresses derived from your experimental
+measurements. Include the information you uncovered from running your version of printsegaddress() and printprocstks().
+
+Ans. printsegaddress() displays the address text, data and the bss segment, along with the previous and next values for each of these segments.
+printprocstks() displays the details of all running process including priority, stack base, length , limit and current stack pointer.
+Below is the visual reporesentation of the stack:
+
+		 -----0x00fffffc----- <-- Stack base address
+		|		     |
+		|		     |<-- [0x00fff2c] Stack pointer before jumping to printprocstks 
+		|   Stack - prnull   |
+		|		     |
+		|		     |
+		 -----0x00fff000----- <-- Stack limit for prnull
+		 -----0x00ffeff8----- <-- Main function's base address
+		|		     |
+		|		     |<-- [0x00ffef90] stack pointer when printprocstks was invoked 
+		|   Stack - main     |
+		|		     |
+		|		     |
+		 -----0x00ffdffc----- <-- Stack limit for main process
+		 -----0x00ffdff8----- <-- Heap's max limit(assuming the entire memory was allocated ti heap)	
+		|		     |
+		|		     |
+		|       heap	     |
+		|		     |
+		|		     |
+		 -----0x00027cd8----- <-- End of BSS segment
+		|	       	     |
+		|		     |
+		|       ebss         |
+		|		     |
+		|		     |
+		 -----0X0001f65b----- <-- End of Data segment
+		|		     |
+		|		     |
+		|	data	     |
+		|		     |
+		|		     |
+		 -----0x0001afcd----- <-- End of text segment
+		|		     |
+		|		     |
+		|        text        |
+		|		     |
+		|		     |
+		 -----0x00000000----- <-- Start of memory and text segment
+		 
+
+Q2. What is the difference in stack top address before and after calling printtos()? Draw a diagram to illustrate what are the contents of the items
+pushed into the stack between these two time points.
+
+Ans. There is an 8 byte difference before and after calling printtos(), 4bytes to store EBP when printtos() is called, while other 4 bytes has
+return address of function calling printtos.
+		
+		 -----0x00ffeff4----- <-- Stack pointer before calling printtos()
+		|		     |
+		|  return address    |
+		|		     |
+		 -----0x00ffeff0----- 
+		| 		     |
+		|   main's  EBP	     |
+		|		     |
+		 -----0x00ffefec----- <-- Stack pointer after calling printtos()
+		 
+		 
+Q3. In a stack frame, local variables are stored below the top of the stack. In task 3, does your result show all the local variables declared in
+your printtos function? If not, can you explain that?
+
+Ans. Initially, the stack doesn't show the local variables as they are not pushed on to the stack. By default the compiler optimization is enabled,
+due to which the local variables are pushed only if they are used for some operation in the function. This results in local variables not pushed to 
+the stack. Disabling the compiler optimization with -O0 in make file, results in pushing all the local variables being pushed to stack and they 
+stored in their Hex equivalent values, and they would be visible on after 5th entry on the stack.
